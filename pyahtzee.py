@@ -34,7 +34,7 @@ class Dice:
 
     def get_scores(self):
 
-        scores = [0] * 12  # fill with 0s to start
+        scores = [0] * 13  # fill with 0s to start
         values = self.get_dice()[0]
         unique = set(values)  # for testing for full house
         #for testing large straights
@@ -66,6 +66,8 @@ class Dice:
         #yahtzee
         if values.count(values[0]) == 5:
             scores[11] = 50
+        #chance
+        scores[12] = sum(values)
 
         return scores
 
@@ -75,16 +77,18 @@ class Game:
     def __init__(self):
         self.dice = Dice()
         self.dice.roll()
-        self.player_scores = ['-'] * 12
+        self.player_scores = ['-'] * 13
 
     def menu(self):
         choice = ''
-        while choice not in ['1', '2', '3', '4', '5', 'R']:
-            choice = input('Enter number of dice to hold (1-5) or R to roll: ').upper()
+        while choice not in ['1', '2', '3', '4', '5', 'R', 'Q']:
+            choice = input('Enter which dice to hold (1-5), R to roll, letter (A-M) of line to score, or Q to quit: ').upper()
 
         if choice == 'R':
             self.dice.roll()
-        else:
+        elif choice == 'Q':
+            quit()
+        elif choice in ['1', '2', '3', '4', '5']:
             choice = int(choice)
             self.dice.hold(choice - 1)
 
@@ -92,8 +96,9 @@ class Game:
         values, holds = self.dice.get_dice()
         print()
         print()
-        print('  held:      {}  {}  {}  {}  {}  '.format(*holds))
-        print('  values:    {}  {}  {}  {}  {}  '.format(*values))
+        print('  held:      {}   {}   {}   {}   {}  '.format(*holds))
+        print('  values:    {}   {}   {}   {}   {}  '.format(*values))
+        print('            (1) (2) (3) (4) (5)')
         print()
 
     def show_scores(self, dice_or_player):
@@ -119,18 +124,21 @@ class Game:
         print("(J) Sm. Straight: " + str(scores[9]))
         print("(K) Lg. Straight: " + str(scores[10]))
         print("(L) Yahtzee:      " + str(scores[11]))
+        print("(M) Chance:       " + str(scores[12]))
         print()
 
 
 g = Game()
 while 1:
+    print(chr(27) + "[2J") # clear screen
     g.show_dice()
     g.show_scores('dice')
     g.menu()
     g.show_scores('player')
 
 
-#NEXT: control game turns (max 3 rolls, then score), keep player score, let player choose what to score
+#NEXT: control game turns (max 3 rolls, then score), keep player score, let player choose what to score (and can score on turn 1 or 2)
+#dice scores: change so it shows blanks or -'s where player has already scored
 
 #then after done, add high score file that saves name and score
 
