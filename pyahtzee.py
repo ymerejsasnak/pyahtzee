@@ -84,27 +84,43 @@ class Game:
         self.dice = Dice()
         self.dice.roll()
         self.player_scores = ['-'] * 13
-        self.roll_count = 0
+        self.roll_count = 1
 
     def menu(self):
-        options = ['1', '2', '3', '4', '5', 'R', 'S', 'Q']
+        options = ['1', '2', '3', '4', '5', 'R', 'S', 'Q', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
         choice = ''
-        turn_counter = 0
         while choice not in options:
             print('Enter which dice to hold (1-5), R to roll, letter (A-M) of line to score, S to show your score, or Q to quit: ')
             print()
             choice = input().upper()
 
+        #HOLD
         if choice == 'R' and self.roll_count < 3:
             self.dice.roll()
             self.roll_count += 1
+        #SHOW PLAYER SCORE
         elif choice == 'S':
             self.show_scores('player')
+        #QUIT
         elif choice == 'Q':
             quit()
+        #HOLD DIE
         elif choice in ['1', '2', '3', '4', '5']:
             choice = int(choice)
             self.dice.hold(choice - 1)
+
+        #CHOOSE SCORING SLOT (and reset roll count and dice holds, then reroll)
+        elif choice in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']:
+            index = ord(choice) - ord('A')
+            if self.player_scores[index] == '-':
+                self.player_scores[index] = self.dice.get_scores()[index]
+                self.roll_count = 1
+                for d in range(5):
+                    self.dice.reset_holds()
+                    self.dice.roll()
+            else:
+                input('MUST USE EMPTY SLOT')
+
 
     def show_dice(self):
         values, holds = self.dice.get_dice()
@@ -146,18 +162,18 @@ class Game:
 
 g = Game()
 while 1:
-    turn = 1
-    while turn <= 3:
-        print(chr(27) + "[2J") # clear screen
-        g.show_dice()
-        g.show_scores('dice')
-        g.menu()
-    for d in range(5):
-        g.dice.reset_holds()
+    print(chr(27) + "[2J") # clear screen
+    g.show_dice()
+    g.show_scores('dice')
+    g.menu()
 
 
 #NEXT: control game turns (max 3 rolls, then score), keep player score, let player choose what to score (and can score on turn 1 or 2)
+#(i think this is done???)
+
 #dice scores: change so it shows blanks or -'s where player has already scored
+
+#then add endgame totalling, final score
 
 #then after done, add high score file that saves name and score
 
