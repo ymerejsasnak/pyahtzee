@@ -23,6 +23,10 @@ class Dice:
     def hold(self, which):
         self.dice[which].hold()
 
+    def reset_holds(self):
+        for d in range(5):
+            self.dice[d].held = False
+
     def roll(self):
         for d in range(5):
             self.dice[d].roll()
@@ -69,6 +73,8 @@ class Dice:
         #chance
         scores[12] = sum(values)
 
+        #LOOP THRU SCORES HERE TO CHANGE ANY PLAYER ALREADY TOOK TO '-'
+
         return scores
 
 
@@ -78,14 +84,22 @@ class Game:
         self.dice = Dice()
         self.dice.roll()
         self.player_scores = ['-'] * 13
+        self.roll_count = 0
 
     def menu(self):
+        options = ['1', '2', '3', '4', '5', 'R', 'S', 'Q']
         choice = ''
-        while choice not in ['1', '2', '3', '4', '5', 'R', 'Q']:
-            choice = input('Enter which dice to hold (1-5), R to roll, letter (A-M) of line to score, or Q to quit: ').upper()
+        turn_counter = 0
+        while choice not in options:
+            print('Enter which dice to hold (1-5), R to roll, letter (A-M) of line to score, S to show your score, or Q to quit: ')
+            print()
+            choice = input().upper()
 
-        if choice == 'R':
+        if choice == 'R' and self.roll_count < 3:
             self.dice.roll()
+            self.roll_count += 1
+        elif choice == 'S':
+            self.show_scores('player')
         elif choice == 'Q':
             quit()
         elif choice in ['1', '2', '3', '4', '5']:
@@ -126,15 +140,20 @@ class Game:
         print("(L) Yahtzee:      " + str(scores[11]))
         print("(M) Chance:       " + str(scores[12]))
         print()
+        if dice_or_player == 'player':
+            input('(Hit enter to continue)')
 
 
 g = Game()
 while 1:
-    print(chr(27) + "[2J") # clear screen
-    g.show_dice()
-    g.show_scores('dice')
-    g.menu()
-    g.show_scores('player')
+    turn = 1
+    while turn <= 3:
+        print(chr(27) + "[2J") # clear screen
+        g.show_dice()
+        g.show_scores('dice')
+        g.menu()
+    for d in range(5):
+        g.dice.reset_holds()
 
 
 #NEXT: control game turns (max 3 rolls, then score), keep player score, let player choose what to score (and can score on turn 1 or 2)
