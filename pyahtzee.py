@@ -73,8 +73,6 @@ class Dice:
         #chance
         scores[12] = sum(values)
 
-        #LOOP THRU SCORES HERE TO CHANGE ANY PLAYER ALREADY TOOK TO '-'
-
         return scores
 
 
@@ -120,6 +118,7 @@ class Game:
                     self.dice.roll()
             else:
                 input('MUST USE EMPTY SLOT')
+            self.show_scores('player')
 
 
     def show_dice(self):
@@ -132,12 +131,18 @@ class Game:
         print()
 
     def show_scores(self, dice_or_player):
+
         if dice_or_player == 'dice':
             scores = self.dice.get_scores()
             message = 'These dice can score in the following ways:'
+            for index in range(13):
+                if self.player_scores[index] != '-':
+                    scores[index] = '-'
+
         if dice_or_player == 'player':
             scores = self.player_scores
             message = 'Your current score card:'
+            
         print()
         print(message)
         print()
@@ -178,3 +183,5 @@ while 1:
 #then after done, add high score file that saves name and score
 
 #??? should scores list be dictionary instead for more readable code?
+
+#later: use graphics or gui library ?
